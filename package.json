@@ -1,0 +1,13 @@
+{
+  "name": "escritorio-de-agentes",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Escritório isométrico no navegador para acompanhar e operar seus agentes de IA: cada agente tem uma mesa, e o computador dele abre o sistema dele.",
+  "license": "MIT",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

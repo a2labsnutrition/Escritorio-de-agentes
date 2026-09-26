@@ -1,0 +1,8 @@
+node_modules/
+
+# o que é seu: configuração, equipe, avisos (chave do CallMeBot), atas e estado
+data/*.json
+!data/sistemas.exemplo.json
+!data/config.exemplo.json
+data/logs/
+data/reunioes/

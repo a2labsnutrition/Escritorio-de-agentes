@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Escritório de Agentes</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@600;700&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ================= TOPO ================= -->
+  <header id="topbar">
+    <div class="brand">
+      <svg class="bolt" viewBox="0 0 40 40" aria-hidden="true"><rect x="2" y="2" width="16" height="16" rx="3"/><rect x="22" y="2" width="16" height="16" rx="3" opacity=".6"/><rect x="2" y="22" width="16" height="16" rx="3" opacity=".6"/><rect x="22" y="22" width="16" height="16" rx="3"/></svg>
+      <div class="brand-txt">
+        <strong id="brand-nome">ESCRITÓRIO DE AGENTES</strong>
+        <span id="brand-sub">painel dos seus agentes de IA</span>
+      </div>
+    </div>
+
+    <div class="clockbox">
+      <div id="clock">--:--</div>
+      <div id="shift">expediente</div>
+    </div>
+
+    <div class="stats">
+      <div class="stat working"><b id="st-work">0</b><span>trabalhando</span></div>
+      <div class="stat idle"><b id="st-idle">0</b><span>descanso</span></div>
+      <div class="stat off"><b id="st-off">0</b><span>offline</span></div>
+    </div>
+
+    <div class="topactions">
+      <button id="btn-quadro" class="btn primary" title="Ideias e agenda da Diretoria">📌 Quadro</button>
+      <button id="btn-avisos" class="btn" title="Avisos no celular">🔔 Avisos</button>
+      <button id="btn-report" class="btn" title="Relatório do gerente">📋 Relatório</button>
+      <button id="btn-voice" class="btn" title="Falar com o gerente">🎤 Voz</button>
+      <button id="btn-speak" class="btn ghost" title="Ler em voz alta">🔊</button>
+      <button id="btn-panel" class="btn ghost only-mobile" title="Painel">☰</button>
+    </div>
+  </header>
+
+  <!-- ================= PALCO ================= -->
+  <main id="stage">
+    <canvas id="scene"></canvas>
+
+    <div id="hud-left">
+      <div class="roomlegend" id="roomlegend"></div>
+    </div>
+
+    <div id="zoombox">
+      <button id="z-in"  class="zbtn">+</button>
+      <button id="z-out" class="zbtn">−</button>
+      <button id="z-fit" class="zbtn" title="Enquadrar">⛶</button>
+    </div>
+
+    <div id="fps"></div>
+    <div id="tooltip" class="tooltip hidden"></div>
+    <div id="toast" class="toast hidden"></div>
+  </main>
+
+  <!-- ================= PAINEL ================= -->
+  <aside id="panel">
+    <nav class="tabs">
+      <button class="tab active" data-tab="equipe">Equipe</button>
+      <button class="tab" data-tab="contratar">Contratar</button>
+      <button class="tab" data-tab="salas">Salas</button>
+    </nav>
+
+    <!-- EQUIPE -->
+    <section class="tabpane active" id="pane-equipe">
+      <div class="panehead">
+        <h2>Equipe em campo</h2>
+        <span class="count" id="team-count">0</span>
+      </div>
+      <div class="filterbar">
+        <input id="team-search" type="search" placeholder="buscar funcionário…">
+        <button class="mini" id="btn-allwork" title="Todos ao trabalho">▶ todos</button>
+        <button class="mini" id="btn-allrest" title="Todos ao descanso">⏸ pausa</button>
+      </div>
+      <div id="team-list" class="list"></div>
+    </section>
+
+    <!-- CONTRATAR -->
+    <section class="tabpane" id="pane-contratar">
+      <div class="panehead">
+        <h2>Banco de talentos</h2>
+      </div>
+      <p class="hint">O agente de exemplo e vagas sugeridas para começar. Use <b>+ Cadastrar</b> para trazer o seu. Clique para contratar — ele entra pela recepção e vai andando até a mesa.</p>
+      <div class="filterbar">
+        <button class="chip active" data-cat="todos">todos</button>
+        <button class="chip" data-cat="detectado">com sistema</button>
+        <button class="chip" data-cat="sugerido">sugestões do gerente</button>
+      </div>
+      <div id="hire-list" class="list"></div>
+    </section>
+
+    <!-- SALAS -->
+    <section class="tabpane" id="pane-salas">
+      <div class="panehead"><h2>Plantas do andar</h2></div>
+      <div id="rooms-list" class="list"></div>
+      <div class="panehead"><h2>Ambiente</h2></div>
+      <div class="opts">
+        <label class="opt"><input type="checkbox" id="opt-rgb" checked> Paredes RGB animadas</label>
+        <label class="opt"><input type="checkbox" id="opt-names" checked> Mostrar nomes</label>
+        <label class="opt"><input type="checkbox" id="opt-status" checked> Mostrar balões de status</label>
+        <label class="opt"><input type="checkbox" id="opt-paths"> Desenhar trajeto de caminhada</label>
+      </div>
+      <div class="panehead"><h2>Dados</h2></div>
+      <div class="opts">
+        <button class="btn wide ghost" id="btn-export">⬇ Exportar equipe (.json)</button>
+        <button class="btn wide ghost" id="btn-import">⬆ Importar equipe</button>
+        <button class="btn wide danger" id="btn-reset">↺ Restaurar padrão</button>
+        <input type="file" id="file-import" accept="application/json" hidden>
+      </div>
+    </section>
+  </aside>
+</div>
+
+<!-- ============ MONITOR DO SISTEMA ============ -->
+<div id="monitor" class="monitor hidden">
+  <header class="mon-top">
+    <div class="mon-quem">
+      <canvas class="mon-av" id="mon-av"></canvas>
+      <div>
+        <strong id="mon-nome">—</strong>
+        <span id="mon-sis">—</span>
+      </div>
+    </div>
+    <div class="mon-estado"><i id="mon-luz"></i><span id="mon-txt">—</span></div>
+    <div class="mon-acoes">
+      <button class="btn" id="mon-ligar">▶ Ligar</button>
+      <button class="btn ghost" id="mon-desligar">■ Desligar</button>
+      <button class="btn ghost" id="mon-chat">💬 Conversar</button>
+      <button class="btn ghost" id="mon-log">📜 Log</button>
+      <button class="btn ghost" id="mon-aba">↗ Nova aba</button>
+      <button class="btn ghost" id="mon-x">✕</button>
+    </div>
+  </header>
+  <div class="mon-corpo">
+    <iframe id="mon-frame" title="sistema do agente"></iframe>
+    <div class="mon-vazio" id="mon-vazio"></div>
+    <pre class="mon-log hidden" id="mon-saida"></pre>
+    <section class="conversa hidden" id="mon-conversa">
+      <div class="cv-linhas" id="cv-linhas"></div>
+      <div class="cv-baixo">
+        <div class="cv-modo">
+          <button class="cv-op on" data-modo="investigar">🔍 Investigar<small>só olha e explica</small></button>
+          <button class="cv-op" data-modo="resolver">🔧 Resolver<small>pode alterar o projeto</small></button>
+        </div>
+        <div class="cv-envio">
+          <textarea id="cv-texto" rows="2" placeholder="Pergunte algo ao agente…"></textarea>
+          <button class="btn primary" id="cv-enviar">Enviar</button>
+        </div>
+        <div class="cv-atalhos" id="cv-atalhos"></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- ============ REUNIÃO DIÁRIA ============ -->
+<div id="reuniao" class="hidden">
+  <div class="rn-card">
+    <header class="rn-top">
+      <div>
+        <h2 id="rn-titulo">REUNIÃO DOS AGENTES</h2>
+        <div class="quando" id="rn-quando">—</div>
+      </div>
+      <div class="rn-acoes">
+        <button class="btn primary" id="rn-rodar">▶ Reunir agora</button>
+        <button class="btn" id="rn-parar">■ Encerrar</button>
+        <button class="btn ghost" id="rn-x">✕</button>
+      </div>
+    </header>
+    <div class="rn-meta" id="rn-meta"></div>
+    <div class="rn-corpo" id="rn-corpo"></div>
+  </div>
+</div>
+
+<!-- ============ MODAL FICHA DO FUNCIONÁRIO ============ -->
+<div id="modal" class="modal hidden">
+  <div class="modal-card">
+    <button class="modal-x" id="modal-x">✕</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script src="/config.js"></script>
+<script src="js/quadro.js"></script>
+<script src="js/sistemas.js"></script>
+<script src="js/conversa.js"></script>
+<script src="js/iso.js"></script>
+<script src="js/path.js"></script>
+<script src="js/world.js"></script>
+<script src="js/avatar.js"></script>
+<script src="js/furniture.js"></script>
+<script src="js/roster.js"></script>
+<script src="js/reuniao.js"></script>
+<script src="js/avisos.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

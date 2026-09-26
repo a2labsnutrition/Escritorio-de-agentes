@@ -1,0 +1,27 @@
+{
+  "_leia": [
+    "Registro dos sistemas dos seus agentes. Na primeira vez que o escritório sobe, este arquivo é copiado para data/sistemas.json, e é esse que vale.",
+    "O jeito fácil de cadastrar é pela tela: aba Contratar > + Cadastrar agente. Ele grava aqui.",
+    "tipo 'local': o escritório sobe o sistema. Campos: pasta (absoluta, ou relativa à pasta do escritório), comando, args, porta, env (opcional), abre (página inicial, padrão '/').",
+    "tipo 'web': só abre o endereço. Campos: url.",
+    "embutir: true abre dentro do escritório; 'espelho' passa por um proxy local para sites que recusam iframe; false manda abrir em outra aba.",
+    "Opcionais: sobre (texto que aparece no monitor), dicas (lista de frases), aviso (faixa de alerta no monitor).",
+    "O escritório só executa o que está neste arquivo, e recusa comando com & | ; < > ` $."
+  ],
+  "exemplo": {
+    "nome": "Agente de exemplo",
+    "tipo": "local",
+    "pasta": "exemplo-agente",
+    "comando": "node",
+    "args": ["server.js"],
+    "env": { "PORT": "4401" },
+    "porta": 4401,
+    "abre": "/",
+    "sobre": "Um sistema mínimo que vem junto com o escritório, para mostrar como ele liga, embute e conversa com um agente. Copie a pasta exemplo-agente como ponto de partida, ou cadastre o seu projeto pela tela.",
+    "dicas": [
+      "Clique em Ligar e o escritório sobe o node server.js desta pasta",
+      "Em Conversar, o Claude Code abre dentro da pasta do sistema e responde sobre ele",
+      "Para tirar o exemplo, apague a entrada \"exemplo\" deste arquivo e demita o agente"
+    ]
+  }
+}

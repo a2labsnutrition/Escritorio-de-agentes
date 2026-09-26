@@ -1,0 +1,27 @@
+{
+  "_leia": "Copie este arquivo para data/config.json e ajuste. O config.json fica fora do git. Campo que faltar usa o padrão.",
+
+  "nome": "Escritório de Agentes",
+  "subtitulo": "painel dos seus agentes de IA",
+  "dono": "Você",
+  "empresa": "",
+  "porta": 4321,
+
+  "reuniao": {
+    "_leia": "automatica: false = só quando você clica em Reunir agora. Cada fala é uma chamada ao Claude e consome a cota do seu plano. dias: 0 = domingo ... 6 = sábado.",
+    "automatica": false,
+    "dias": [1, 5],
+    "hora": 11,
+    "minuto": 0,
+    "duracaoMin": 30,
+    "modelo": "sonnet",
+    "foco": "o que cada agente pode melhorar no próprio sistema esta semana",
+    "meta": {
+      "descricao": "",
+      "alvo": 0,
+      "feito": 0,
+      "unidade": "vendas",
+      "ate": ""
+    }
+  }
+}
