@@ -133,4 +133,4 @@ data/              seus dados (fora do git, menos os exemplos)
 
 ## Licença
 
-MIT. Veja [LICENSE](LICENSE).
+Uso pessoal permitido. **Proibida a venda, revenda ou redistribuição** (inclusive com outra marca). Veja [LICENSE](LICENSE).
