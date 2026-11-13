@@ -1,0 +1,539 @@
+<title>Escritório de Agentes</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=Space+Grotesk:wght@400;500;600;700&display=swap">
+
+<style>
+/* ── Tokens ─────────────────────────────────────────────── */
+:root {
+  /* Minimalist palette — cool near-white + 1 gold accent */
+  --bg:      #f1f3f6;
+  --surface: #ffffff;
+  --border:  #e2e6ec;
+  --fg:      #0f1923;
+  --muted:   #64748b;
+  --gold:    #f59e0b;
+  --gold-dk: #b45309;
+
+  /* font */
+  --ff-head: 'Space Grotesk', system-ui, sans-serif;
+  --ff-body: 'Inter', system-ui, sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:      #0a0f1a;
+    --surface: #111827;
+    --border:  #1e2d3d;
+    --fg:      #e8edf3;
+    --muted:   #64748b;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg:      #0a0f1a;
+  --surface: #111827;
+  --border:  #1e2d3d;
+  --fg:      #e8edf3;
+  --muted:   #64748b;
+  color-scheme: dark;
+}
+
+/* ── Reset ──────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--ff-body);
+  min-height: 100vh;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+header {
+  width: 100%;
+  max-width: 820px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-block: 20px 10px;
+}
+.logo {
+  width: 36px; height: 36px; border-radius: 9px;
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--ff-head);
+  font-size: 13px; font-weight: 700; color: #fff;
+  flex-shrink: 0;
+}
+.hdr-text h1 {
+  font-family: var(--ff-head);
+  font-size: 18px; font-weight: 700; letter-spacing: -0.3px;
+  color: var(--fg);
+}
+.hdr-text p {
+  font-size: 12px; color: var(--muted); margin-top: 1px;
+}
+.hdr-badges {
+  margin-left: auto;
+  display: flex; gap: 6px;
+}
+.badge {
+  font-size: 11px; font-weight: 600; padding: 3px 10px;
+  border-radius: 99px; border: 1px solid var(--border);
+  color: var(--muted); background: var(--surface);
+  font-family: var(--ff-head);
+}
+
+/* ── Canvas wrapper ─────────────────────────────────────── */
+.canvas-wrap {
+  width: 100%; max-width: 820px;
+  position: relative;
+  margin-block: 4px;
+}
+canvas {
+  width: 100%;
+  height: auto;
+  display: block;
+  cursor: default;
+  border-radius: 16px;
+  background: transparent;
+}
+
+/* ── Detail panel ───────────────────────────────────────── */
+#panel {
+  width: 100%; max-width: 820px;
+  margin-block: 8px 24px;
+  min-height: 90px;
+}
+.panel-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px 20px;
+  display: flex; gap: 16px; align-items: flex-start;
+  animation: slideUp .2s ease;
+}
+@keyframes slideUp {
+  from { opacity:0; transform: translateY(8px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+.panel-icon {
+  width: 44px; height: 44px; border-radius: 11px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px; flex-shrink: 0;
+}
+.panel-info { flex: 1; min-width: 0; }
+.panel-title {
+  font-family: var(--ff-head);
+  font-size: 15px; font-weight: 700; color: var(--fg);
+}
+.panel-desc {
+  font-size: 13px; color: var(--muted); margin-top: 4px; line-height: 1.6;
+}
+.panel-agents {
+  display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px;
+}
+.agent-tag {
+  font-size: 11px; font-weight: 600; padding: 2px 9px;
+  border-radius: 99px; border: 1px solid var(--border);
+  color: var(--muted); background: var(--bg);
+  font-family: var(--ff-head);
+}
+.panel-hint {
+  display: flex; align-items: center; justify-content: center;
+  gap: 8px; min-height: 60px;
+  font-size: 12px; color: var(--muted);
+}
+
+/* ── Legend ─────────────────────────────────────────────── */
+.legend {
+  width: 100%; max-width: 820px;
+  display: flex; flex-wrap: wrap; gap: 8px;
+  margin-bottom: 24px;
+}
+.leg-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 11px; color: var(--muted); cursor: pointer;
+  padding: 4px 10px; border-radius: 8px;
+  border: 1px solid transparent;
+  transition: all .15s;
+}
+.leg-item:hover { border-color: var(--border); background: var(--surface); }
+.leg-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+</style>
+
+<header>
+  <div class="logo">a²</div>
+  <div class="hdr-text">
+    <h1>Escritório de Agentes</h1>
+    <p>a²labs Nutrition — Clique em um setor para explorar</p>
+  </div>
+  <div class="hdr-badges">
+    <span class="badge">9 setores</span>
+    <span class="badge">Piso único</span>
+  </div>
+</header>
+
+<div class="canvas-wrap">
+  <canvas id="canvas" width="760" height="510"></canvas>
+</div>
+
+<div id="panel">
+  <div class="panel-hint" id="hint">
+    ↑ &nbsp; Clique em qualquer sala para ver os detalhes
+  </div>
+</div>
+
+<div class="legend" id="legend"></div>
+
+<script>
+/* ── Config ─────────────────────────────────────────────── */
+const TW = 92, TH = 46, WH = 50;
+const OX = 290, OY = 52;
+
+function v(c, r) {
+  return { x: OX + (c - r) * TW / 2, y: OY + (c + r) * TH / 2 };
+}
+
+/* ── Rooms data ─────────────────────────────────────────── */
+const ROOMS = [
+  {
+    id:'lideranca', c:0, r:0, w:2, d:2,
+    hue:45, sat:60, featured: false,
+    icon:'👑', label:'LIDERANÇA',
+    title:'Sala da Liderança',
+    desc:'Tomada de decisão executiva, visão estratégica e direcionamento do negócio. Centro de comando da organização.',
+    agents:['CEO','CFO','Conselho Estratégico']
+  },
+  {
+    id:'reunioes', c:2, r:0, w:3, d:2,
+    hue:218, sat:55,
+    icon:'🤝', label:'REUNIÕES',
+    title:'Sala de Conferências',
+    desc:'Reuniões de equipe, apresentações estratégicas, brainstorming e alinhamentos de projeto.',
+    agents:['Todos os times','Clientes VIP','Parceiros']
+  },
+  {
+    id:'tecnologia', c:5, r:0, w:3, d:2,
+    hue:195, sat:55,
+    icon:'💻', label:'TECNOLOGIA',
+    title:'Setor de Tecnologia',
+    desc:'Desenvolvimento de sistemas, infraestrutura digital, automação de processos e inovação tecnológica.',
+    agents:['Devs','DevOps','Arquitetos de Sistema']
+  },
+  {
+    id:'clientes', c:0, r:2, w:2, d:2,
+    hue:355, sat:55,
+    icon:'🌟', label:'CLIENTES',
+    title:'Sucesso do Cliente',
+    desc:'Atendimento, fidelização e experiência do cliente. Ponto de contato e relacionamento pós-venda.',
+    agents:['CS Team','Suporte','Account Managers']
+  },
+  {
+    id:'lucratividade', c:2, r:2, w:3, d:2,
+    hue:142, sat:65, featured: true,
+    icon:'💰', label:'LUCRATIVIDADE',
+    title:'Setor de Lucratividade',
+    desc:'Controle de receitas, gestão de margens, análise de DRE, otimização de custos e maximização de resultados financeiros.',
+    agents:['Financeiro','Contabilidade','Controllers','Analistas Financeiros']
+  },
+  {
+    id:'marketing', c:5, r:2, w:3, d:2,
+    hue:280, sat:55,
+    icon:'📱', label:'MARKETING',
+    title:'Marketing & Growth',
+    desc:'Estratégia digital, criação de conteúdo, campanhas, geração de leads e posicionamento de marca.',
+    agents:['Growth Hackers','Designers','Copywriters','SDRs']
+  },
+  {
+    id:'recepcao', c:0, r:4, w:2, d:2,
+    hue:25, sat:55,
+    icon:'🏢', label:'RECEPÇÃO',
+    title:'Recepção & Atendimento',
+    desc:'Entrada da empresa, primeiro contato com visitantes e clientes, controle de acesso e agenda.',
+    agents:['Recepcionistas','Assistentes']
+  },
+  {
+    id:'operacoes', c:2, r:4, w:3, d:2,
+    hue:260, sat:50,
+    icon:'📋', label:'OPERAÇÕES',
+    title:'Gestão & Operações',
+    desc:'Processos operacionais, gestão de projetos, coordenação entre times e eficiência organizacional.',
+    agents:['Gestores','Coordenadores','Project Managers']
+  },
+  {
+    id:'cafe', c:5, r:4, w:3, d:2,
+    hue:30, sat:60,
+    icon:'☕', label:'CAFÉ',
+    title:'Break Room — Café',
+    desc:'Espaço de descanso, conexões informais, networking interno e recarga de energia da equipe.',
+    agents:['Todos','Sempre aberto ☕']
+  },
+];
+
+/* Sort back-to-front (painter's algo) */
+const sorted = [...ROOMS].sort((a, b) => (a.c + a.r) - (b.c + b.r));
+
+/* ── Color helpers ──────────────────────────────────────── */
+function roomColors(hue, sat, hovered, featured) {
+  const hv = hovered ? 5 : 0;
+  const lt = featured ? 88 : 86;
+  return {
+    top:   `hsl(${hue},${sat}%,${lt + hv}%)`,
+    right: `hsl(${hue},${sat * .55}%,${72 + hv}%)`,
+    left:  `hsl(${hue},${sat * .45}%,${60 + hv}%)`,
+    text:  `hsl(${hue},${sat * .7}%,28%)`,
+    badge: `hsl(${hue},${sat}%,${lt}%)`,
+  };
+}
+
+/* Dark-mode aware: recalculate colors if dark */
+function isDark() {
+  const r = document.documentElement;
+  if (r.dataset.theme === 'dark') return true;
+  if (r.dataset.theme === 'light') return false;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches;
+}
+
+/* ── Canvas setup ───────────────────────────────────────── */
+const canvas = document.getElementById('canvas');
+const ctx    = canvas.getContext('2d');
+let dpr = 1; // keep 1 for simplicity in artifact frame
+
+let hoveredId = null, selectedId = null;
+
+/* ── Draw helpers ───────────────────────────────────────── */
+function poly(pts, fill, stroke, lw = 1.5) {
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, pts[0].y);
+  for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+  ctx.closePath();
+  ctx.fillStyle = fill;
+  ctx.fill();
+  if (stroke) {
+    ctx.strokeStyle = stroke;
+    ctx.lineWidth = lw;
+    ctx.stroke();
+  }
+}
+
+function roomGeom(rm) {
+  const NW = v(rm.c,        rm.r);
+  const NE = v(rm.c + rm.w, rm.r);
+  const SE = v(rm.c + rm.w, rm.r + rm.d);
+  const SW = v(rm.c,        rm.r + rm.d);
+  return { NW, NE, SE, SW };
+}
+
+function drawRoom(rm, hovered, selected) {
+  const dark = isDark();
+  const cl   = roomColors(rm.hue, rm.sat, hovered || selected, rm.featured);
+  const { NW, NE, SE, SW } = roomGeom(rm);
+
+  const wallL = dark ? `hsl(0,0%,18%)` : `hsl(0,0%,91%)`;
+  const wallR = dark ? `hsl(0,0%,13%)` : `hsl(0,0%,83%)`;
+  const sep   = dark ? `rgba(255,255,255,.07)` : `rgba(255,255,255,.8)`;
+
+  /* left (south-west) wall */
+  poly(
+    [SW, SE, {x:SE.x,y:SE.y+WH}, {x:SW.x,y:SW.y+WH}],
+    hovered||selected ? (dark?`hsl(${rm.hue},20%,22%)`:`hsl(${rm.hue},18%,88%)`) : wallL,
+    sep, 1
+  );
+  /* right (south-east) wall */
+  poly(
+    [NE, SE, {x:SE.x,y:SE.y+WH}, {x:NE.x,y:NE.y+WH}],
+    hovered||selected ? (dark?`hsl(${rm.hue},20%,16%)`:`hsl(${rm.hue},14%,80%)`) : wallR,
+    sep, 1
+  );
+
+  /* top face */
+  if (rm.featured) {
+    /* subtle glow behind featured room */
+    ctx.save();
+    ctx.shadowColor = `hsl(${rm.hue},70%,55%)`;
+    ctx.shadowBlur  = selected ? 22 : 14;
+  }
+  poly([NW, NE, SE, SW], cl.top, sep, 1.5);
+  if (rm.featured) ctx.restore();
+
+  /* featured star badge */
+  if (rm.featured) {
+    const bx = NE.x - 6, by = NE.y + 2;
+    ctx.save();
+    ctx.font = '14px system-ui';
+    ctx.textAlign = 'right';
+    ctx.textBaseline = 'top';
+    ctx.fillText('⭐', bx, by);
+    ctx.restore();
+  }
+
+  /* icon + label on top face */
+  const cx = (NW.x + SE.x) / 2;
+  const cy = (NW.y + SE.y) / 2 - 2;
+
+  ctx.save();
+  ctx.textAlign    = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.font         = `${rm.d >= 2 ? 18 : 14}px system-ui`;
+  ctx.fillText(rm.icon, cx, cy - 9);
+
+  ctx.font         = `700 ${rm.w >= 3 ? 9.5 : 8.5}px Inter, sans-serif`;
+  ctx.letterSpacing = '0.8px';
+  ctx.fillStyle    = cl.text;
+  if (hovered || selected) ctx.fillStyle = `hsl(${rm.hue},60%,22%)`;
+  ctx.fillText(rm.label, cx, cy + 10);
+  ctx.restore();
+}
+
+/* ── Ground plane ───────────────────────────────────────── */
+function drawGround() {
+  const dark = isDark();
+  /* outer shadow shape */
+  const NW = v(0, 0), NE = v(8, 0), SE = v(8, 6), SW = v(0, 6);
+  ctx.save();
+  ctx.shadowColor = dark ? 'rgba(0,0,0,.5)' : 'rgba(0,0,0,.12)';
+  ctx.shadowBlur = 28;
+  ctx.shadowOffsetY = 8;
+  poly([NW, NE, SE, SW], dark ? '#0d1420' : '#dde3ec', null);
+  ctx.restore();
+
+  /* floor tile grid */
+  for (let c = 0; c < 8; c++) {
+    for (let r = 0; r < 6; r++) {
+      const A = v(c,   r);
+      const B = v(c+1, r);
+      const C = v(c+1, r+1);
+      const D = v(c,   r+1);
+      const tileColor = dark
+        ? `hsl(0,0%,${10 + ((c+r)%2)*1.5}%)`
+        : `hsl(220,10%,${89 + ((c+r)%2)*1.5}%)`;
+      poly([A, B, C, D], tileColor, dark ? 'rgba(255,255,255,.03)' : 'rgba(0,0,0,.03)', 0.5);
+    }
+  }
+}
+
+/* ── Main draw ──────────────────────────────────────────── */
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  drawGround();
+  for (const rm of sorted) {
+    drawRoom(rm, hoveredId === rm.id, selectedId === rm.id);
+  }
+}
+
+/* ── Hit test ───────────────────────────────────────────── */
+function pip(px, py, pts) {
+  let inside = false;
+  for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+    const xi = pts[i].x, yi = pts[i].y, xj = pts[j].x, yj = pts[j].y;
+    if (((yi > py) !== (yj > py)) && px < (xj - xi) * (py - yi) / (yj - yi) + xi)
+      inside = !inside;
+  }
+  return inside;
+}
+
+function roomAt(px, py) {
+  /* front-to-back = reverse painter */
+  const rev = [...sorted].reverse();
+  for (const rm of rev) {
+    const { NW, NE, SE, SW } = roomGeom(rm);
+    const shape = [
+      NW, NE, { x: NE.x, y: NE.y + WH },
+      { x: SE.x, y: SE.y + WH }, { x: SW.x, y: SW.y + WH }, SW
+    ];
+    if (pip(px, py, shape)) return rm;
+  }
+  return null;
+}
+
+/* ── Scale canvas coords from CSS pixels ────────────────── */
+function canvasXY(e) {
+  const r  = canvas.getBoundingClientRect();
+  const sx = canvas.width  / r.width;
+  const sy = canvas.height / r.height;
+  return { x: (e.clientX - r.left) * sx, y: (e.clientY - r.top) * sy };
+}
+
+/* ── Events ─────────────────────────────────────────────── */
+canvas.addEventListener('mousemove', e => {
+  const { x, y } = canvasXY(e);
+  const rm = roomAt(x, y);
+  const id = rm ? rm.id : null;
+  if (id !== hoveredId) {
+    hoveredId = id;
+    canvas.style.cursor = id ? 'pointer' : 'default';
+    draw();
+  }
+});
+
+canvas.addEventListener('mouseleave', () => {
+  hoveredId = null;
+  canvas.style.cursor = 'default';
+  draw();
+});
+
+canvas.addEventListener('click', e => {
+  const { x, y } = canvasXY(e);
+  const rm = roomAt(x, y);
+  if (!rm) return;
+  selectedId = selectedId === rm.id ? null : rm.id;
+  draw();
+  updatePanel(selectedId ? rm : null);
+});
+
+/* ── Panel ──────────────────────────────────────────────── */
+function updatePanel(rm) {
+  const panel = document.getElementById('panel');
+  if (!rm) {
+    panel.innerHTML = `<div class="panel-hint" id="hint">↑ &nbsp; Clique em qualquer sala para ver os detalhes</div>`;
+    return;
+  }
+  const cl = roomColors(rm.hue, rm.sat, false, rm.featured);
+  panel.innerHTML = `
+    <div class="panel-card">
+      <div class="panel-icon" style="background:${cl.top}">${rm.icon}</div>
+      <div class="panel-info">
+        <div class="panel-title">${rm.title}${rm.featured ? ' &nbsp;⭐' : ''}</div>
+        <div class="panel-desc">${rm.desc}</div>
+        <div class="panel-agents">
+          ${rm.agents.map(a => `<span class="agent-tag">${a}</span>`).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+
+/* ── Legend ─────────────────────────────────────────────── */
+function buildLegend() {
+  const leg = document.getElementById('legend');
+  leg.innerHTML = ROOMS.map(rm => {
+    const cl = roomColors(rm.hue, rm.sat, false, rm.featured);
+    return `<div class="leg-item" data-id="${rm.id}">
+      <div class="leg-dot" style="background:${cl.top}"></div>
+      ${rm.icon} ${rm.label}
+    </div>`;
+  }).join('');
+
+  leg.querySelectorAll('.leg-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const id = el.dataset.id;
+      selectedId = selectedId === id ? null : id;
+      draw();
+      updatePanel(selectedId ? ROOMS.find(r => r.id === id) : null);
+    });
+  });
+}
+
+/* ── Redraw on theme change ─────────────────────────────── */
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', draw);
+
+/* ── Init ───────────────────────────────────────────────── */
+buildLegend();
+draw();
+</script>
